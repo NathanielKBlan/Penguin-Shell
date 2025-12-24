@@ -2,6 +2,7 @@
 // Created by nate on 12/22/25.
 //
 #include "penguin-main.h"
+#include "../antarctic/antarctic_env.h"
 
 //returns a set of parsed tokens and the amount of tokens found, right now this is just to parse command args
 void parse(char ** tokens, char * input, size_t n) {
@@ -89,6 +90,8 @@ int run() {
 
     greet();
 
+    history * hist = init_history();
+
     char cwd[MAX_PATH_LEN] = {0};
     char cmmd[MAX_CMMD_LEN] = {0};
 
@@ -113,10 +116,15 @@ int run() {
             pen_pwd();
         }else if (strcmp(*(tokens), "cd") == 0) {
             pen_cd(tokens);
+        }else if (strcmp(*(tokens), "xpt") == 0 || strcasecmp(*(tokens), "export") == 0) {
+            export(*(tokens + 1));
         }else {
             //execute the entered command
             waddle(*(tokens), tokens);
         }
+
+        add_to_history(hist, *(tokens), tokens);
+
 
     }
 }
