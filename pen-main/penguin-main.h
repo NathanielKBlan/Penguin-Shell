@@ -2,8 +2,8 @@
 // Created by nate on 12/22/25.
 //
 
-#ifndef PENGUINC_PENGUIN_MAIN_H
-#define PENGUINC_PENGUIN_MAIN_H
+#ifndef PENGUIN_PENGUIN_MAIN_H
+#define PENGUIN_PENGUIN_MAIN_H
 
 #include <stdio.h>
 #include <unistd.h>
@@ -15,10 +15,11 @@
 //common constants used by penguin go here
 #define MAX_CMMD_LEN 65536
 #define MAX_PATH_LEN 262144
+#define MAX_ARG_LEN 128
 #define TOK_LIM 1024
 
 //parsing method for commands, results of parse saved in tokens, n represents the length of the input
-void parse(char ** tokens, char * input, size_t n);
+size_t parse(char ** tokens, char * input, size_t n);
 
 //method that handles execution of the commands
 int waddle(char * base_command, char ** args);
@@ -32,4 +33,4 @@ void pen_cd(char ** args);
 void greet();
 int run();
 
-#endif //PENGUINC_PENGUIN_MAIN_H
+#endif //PENGUIN_PENGUIN_MAIN_H

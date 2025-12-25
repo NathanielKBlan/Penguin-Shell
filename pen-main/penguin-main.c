@@ -5,10 +5,11 @@
 #include "../antarctic/antarctic_env.h"
 
 //returns a set of parsed tokens and the amount of tokens found, right now this is just to parse command args
-void parse(char ** tokens, char * input, size_t n) {
+//TODO handle case of quotes
+size_t parse(char ** tokens, char * input, size_t n) {
 
-    *(tokens) = malloc(sizeof(char *));
-    int token_counter = 0;
+    *(tokens) = malloc(sizeof(char *) * MAX_ARG_LEN);
+    size_t token_counter = 0;
     int curr_tok_ptr = 0;
     for (int i = 0; i < n; i = i + 1) {
 
@@ -17,8 +18,9 @@ void parse(char ** tokens, char * input, size_t n) {
         }
 
         if (*(input + i) == ' ') {
+            *(*(tokens + token_counter) + curr_tok_ptr) = '\0';
             token_counter = token_counter + 1;
-            *(tokens + token_counter) = malloc(sizeof(char *));
+            *(tokens + token_counter) = malloc(sizeof(char *) * MAX_ARG_LEN);
             curr_tok_ptr = 0;
         }else{
             *(*(tokens + token_counter) + curr_tok_ptr) = *(input + i);
@@ -26,6 +28,8 @@ void parse(char ** tokens, char * input, size_t n) {
         }
     }
 
+    //the plus one is to take into account the first token
+    return token_counter + 1;
 }
 
 int waddle(char * base_command, char ** args) {
@@ -48,7 +52,6 @@ int waddle(char * base_command, char ** args) {
     }
 
     wait(&child_status);
-    printf("Parent has executed the child pid: %d\n", pid);
 
 }
 
@@ -106,9 +109,8 @@ int run() {
         fgets(cmmd, MAX_CMMD_LEN, stdin);
 
         //tokenize the command and fetch the args as well
-        //TODO make this section here more efficient, I shouldn't have to allocate new pointers for the agrs
         char ** tokens = malloc(sizeof(char *) * TOK_LIM);
-        parse(tokens, cmmd, strlen(cmmd));
+        size_t arg_count = parse(tokens, cmmd, strlen(cmmd));
 
         if (strcmp(*(tokens), "exit") == 0) {
             pen_exit();
@@ -118,13 +120,17 @@ int run() {
             pen_cd(tokens);
         }else if (strcmp(*(tokens), "xpt") == 0 || strcasecmp(*(tokens), "export") == 0) {
             export(*(tokens + 1));
-        }else {
+        }else if (strcmp(*(tokens), "history") == 0) {
+            print_history(hist);
+        }
+        else {
             //execute the entered command
             waddle(*(tokens), tokens);
         }
 
-        add_to_history(hist, *(tokens), tokens);
-
+        if (strcmp(*(tokens), "history") != 0) {
+            add_to_history(hist, cmmd, *(tokens), tokens, strlen(cmmd), arg_count);
+        }
 
     }
 }
