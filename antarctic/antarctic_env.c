@@ -55,27 +55,44 @@ int export(char * new_var){
 history * init_history() {
     history * hist = malloc(sizeof(history));
     hist->next_empty = 0;
+    hist->cells_filled = 0;
     hist->entries = malloc(sizeof(char *) * HISTORY_LIM);
     return hist;
 }
 
 //TODO handle duplicate or empty case
-int add_to_history(history * hist, char * command, char ** args) {
+int add_to_history(history * hist, char * full_cmmd, char * command, char ** args, size_t command_len, size_t arg_count) {
 
     history_entry * next_entry = *(hist->entries + hist->next_empty);
 
     if (next_entry == NULL) {
         next_entry = malloc(sizeof(history_entry));
     } else {
+        free(next_entry->full_cmmd);
         free(next_entry->command);
         free(next_entry->args);
     }
 
+    next_entry->full_cmmd = malloc(sizeof(char) * command_len);
+    strcpy(next_entry->full_cmmd, full_cmmd);
+
     next_entry->command = command;
     next_entry->args = args;
+    next_entry->arg_count = arg_count;
 
     *((hist->entries) + hist->next_empty) = next_entry;
+
+    if (hist->cells_filled < HISTORY_LIM) {
+        hist->cells_filled = hist->cells_filled + 1;
+    }
+
     hist->next_empty = (hist->next_empty + 1) % HISTORY_LIM;
 
     return 0;
+}
+
+void print_history(history * hist) {
+    for (int i = 0; i < hist->cells_filled; i++) {
+        printf("%s", (*(hist->entries + i))->full_cmmd);
+    }
 }
