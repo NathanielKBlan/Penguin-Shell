@@ -2,13 +2,14 @@
 // Created by nate on 12/22/25.
 //
 #include "penguin-main.h"
-#include "../antarctic/antarctic_env.h"
 
 //returns a set of parsed tokens and the amount of tokens found, right now this is just to parse command args
 //TODO handle case of quotes
 size_t parse(char ** tokens, char * input, size_t n) {
 
     *(tokens) = malloc(sizeof(char *) * MAX_ARG_LEN);
+    memset(*(tokens), 0, sizeof(char *) * MAX_ARG_LEN);
+
     size_t token_counter = 0;
     int curr_tok_ptr = 0;
     for (int i = 0; i < n; i = i + 1) {
@@ -21,6 +22,7 @@ size_t parse(char ** tokens, char * input, size_t n) {
             *(*(tokens + token_counter) + curr_tok_ptr) = '\0';
             token_counter = token_counter + 1;
             *(tokens + token_counter) = malloc(sizeof(char *) * MAX_ARG_LEN);
+            memset(*(tokens + token_counter), 0, sizeof(char *) * MAX_ARG_LEN);
             curr_tok_ptr = 0;
         }else{
             *(*(tokens + token_counter) + curr_tok_ptr) = *(input + i);
@@ -55,7 +57,8 @@ int waddle(char * base_command, char ** args) {
 
 }
 
-void pen_exit() {
+void pen_exit(history * hist) {
+    clean_up(hist);
     printf("Goodbye (•ᴗ•)ゝ\n");
     exit(0);
 }
@@ -89,6 +92,31 @@ void greet() {
     printf("===========================\n");
 }
 
+int clean_up(history * hist) {
+    for (int i = 0; i < hist->cells_filled; i++) {
+        history_entry * entry = *(hist->entries + i);
+        for (int j = 0; j < entry->arg_count; j++) {
+            char * arg = *(entry->args + j);
+            free(arg);
+        }
+        free(entry->command);
+        free(entry->args);
+        free(entry->full_cmmd);
+        free(entry);
+    }
+    free(hist->entries);
+    free(hist);
+}
+
+void free_tokens(char ** tokens, size_t arg_count) {
+    //free the resources taken by the tokens
+    for (int i = 0; i < arg_count; i++) {
+        free(*(tokens + i));
+    }
+
+    free(tokens);
+}
+
 int run() {
 
     greet();
@@ -110,10 +138,13 @@ int run() {
 
         //tokenize the command and fetch the args as well
         char ** tokens = malloc(sizeof(char *) * TOK_LIM);
+        memset(tokens, 0, sizeof(char *) * TOK_LIM);
+
         size_t arg_count = parse(tokens, cmmd, strlen(cmmd));
 
         if (strcmp(*(tokens), "exit") == 0) {
-            pen_exit();
+            free_tokens(tokens, arg_count);
+            pen_exit(hist);
         }else if (strcmp(*(tokens), "pwd") == 0) {
             pen_pwd();
         }else if (strcmp(*(tokens), "cd") == 0) {
@@ -132,5 +163,6 @@ int run() {
             add_to_history(hist, cmmd, *(tokens), tokens, strlen(cmmd), arg_count);
         }
 
+        free_tokens(tokens, arg_count);
     }
 }

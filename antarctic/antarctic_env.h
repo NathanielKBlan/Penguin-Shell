@@ -11,6 +11,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+//common constants used by penguin go here
+#define MAX_CMMD_LEN 65536
+#define MAX_PATH_LEN 262144
+#define MAX_ARG_LEN 128
+#define MAX_ARGS 1024
+#define TOK_LIM 1024
 #define VAR_NAME_LIM 256
 #define VAR_VAL_LIM 1024
 #define HISTORY_LIM 128
