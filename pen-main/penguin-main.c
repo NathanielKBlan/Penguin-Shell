@@ -95,13 +95,7 @@ void greet() {
 int clean_up(history * hist) {
     for (int i = 0; i < hist->cells_filled; i++) {
         history_entry * entry = *(hist->entries + i);
-        for (int j = 0; j < entry->arg_count; j++) {
-            char * arg = *(entry->args + j);
-            free(arg);
-        }
-        free(entry->command);
-        free(entry->args);
-        free(entry->full_cmmd);
+        clear_entry(entry);
         free(entry);
     }
     free(hist->entries);

@@ -63,6 +63,41 @@ history * init_history() {
     return hist;
 }
 
+history_entry * init_entry(size_t command_len, size_t arg_count) {
+    history_entry * new_entry = malloc(sizeof(history_entry));
+
+    new_entry->full_cmmd = NULL;
+    new_entry->command = NULL;
+    new_entry->args = NULL;
+
+    //allocate memory for the full command
+    new_entry->full_cmmd = malloc(sizeof(char) * command_len + 1);
+    memset(new_entry->full_cmmd, 0, sizeof(char) * command_len + 1);
+
+    //allocate memory for the command portion
+    new_entry->command = malloc(sizeof(char) * MAX_CMMD_LEN + 1);
+    memset(new_entry->command, 0, sizeof(char) * MAX_CMMD_LEN + 1);
+
+    //allocate memory for the arguments
+    new_entry->args = malloc(sizeof(char *) * arg_count);
+    for (int i = 0; i < arg_count; i++) {
+        *(new_entry->args + i) = malloc(sizeof(char) * MAX_ARG_LEN);
+        memset(*(new_entry->args + i), 0, sizeof(char) * MAX_ARG_LEN);
+    }
+
+    return new_entry;
+}
+
+void clear_entry(history_entry * entry) {
+    free(entry->full_cmmd);
+    free(entry->command);
+    for (int i = 0; i < entry->arg_count; i++) {
+        free(*(entry->args + i));
+    }
+    free(entry->args);
+}
+
+
 //TODO handle duplicate or empty case
 int add_to_history(history * hist, char * full_cmmd, char * command, char ** args, size_t command_len, size_t arg_count) {
 
@@ -71,33 +106,11 @@ int add_to_history(history * hist, char * full_cmmd, char * command, char ** arg
 
     //if the entry is null then we allocate a new entry into memory
     if ((*next_entry) == NULL) {
-        (*next_entry) = malloc(sizeof(history_entry));
-
-        (*next_entry)->full_cmmd = NULL;
-        (*next_entry)->command = NULL;
-        (*next_entry)->args = NULL;
-
-        //allocate memory for the full command
-        (*next_entry)->full_cmmd = malloc(sizeof(char) * command_len + 1);
-        memset((*next_entry)->full_cmmd, 0, sizeof(char) * command_len + 1);
-
-        //allocate memory for the command portion
-        (*next_entry)->command = malloc(sizeof(char) * MAX_CMMD_LEN + 1);
-        memset((*next_entry)->command, 0, sizeof(char) * MAX_CMMD_LEN + 1);
-
-        //allocate memory for the arguments
-        (*next_entry)->args = malloc(sizeof(char *) * arg_count);
-        for (int i = 0; i < arg_count; i++) {
-            *((*next_entry)->args + i) = malloc(sizeof(char) * MAX_ARG_LEN);
-            memset(*((*next_entry)->args + i), 0, sizeof(char) * MAX_ARG_LEN);
-        }
+        (*next_entry) = init_entry(command_len, arg_count);
     } else {
         //clear out the full command, command, and arguments
-        memset((*next_entry)->full_cmmd, 0, sizeof(char) * command_len + 1);
-        memset((*next_entry)->command, 0, sizeof(char) * MAX_CMMD_LEN + 1);
-        for (int i = 0; i < (*next_entry)->arg_count; i++) {
-            memset(*((*next_entry)->args + i), 0, sizeof(char) * MAX_ARG_LEN);
-        }
+        clear_entry((*next_entry));
+        (*next_entry) = init_entry(command_len, arg_count);
     }
 
     //deep copy the full command, command, and arguments
@@ -109,6 +122,9 @@ int add_to_history(history * hist, char * full_cmmd, char * command, char ** arg
 
     //set the argument count
     (*next_entry)->arg_count = arg_count;
+
+    //set the full command length
+    (*next_entry)->full_cmmd_len = command_len;
 
     //increase the cells filled count, if we're at the limit then don't increase
     if (hist->cells_filled < HISTORY_LIM) {

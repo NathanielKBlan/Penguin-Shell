@@ -26,6 +26,7 @@ typedef struct {
     char * command;
     char ** args;
     int arg_count;
+    int full_cmmd_len;
 } history_entry ;
 
 typedef struct {
@@ -41,6 +42,10 @@ void print_antarctic_vars();
 
 //history management library
 history * init_history();
+
+history_entry * init_entry(size_t command_len, size_t arg_count);
+
+void clear_entry(history_entry * entry);
 
 int add_to_history(history * hist, char * full_cmmd, char * command, char ** args, size_t command_len, size_t arg_count);
 
