@@ -12,19 +12,12 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include "../antarctic/antarctic_env.h"
+#include "pen_lan.h"
 
 typedef struct {
     char * command;
     void (*pen_func)(char ** args, history *, size_t arg_count);
 } pen_builtin;
-
-typedef enum {
-    QUOTE_TOKEN,
-    TOKEN
-} parser_state;
-
-//parsing method for commands, results of parse saved in tokens, n represents the length of the input
-size_t parse(char ** tokens, char * input, size_t n);
 
 //method that handles execution of the commands
 int waddle(char * base_command, char ** args);
