@@ -4,11 +4,16 @@
 
 #include "antarctic_env.h"
 
-int export(char * new_var){
+void pen_export(char ** args, history * hist, size_t arg_count){
 
     //the scheme will be something like VAR_NAME=String
     //so to verify that it's a valid variable entry we can just do a simple
     //state machine that checks for that =
+
+    (void)hist;
+    (void)arg_count;
+
+    char * new_var = *(args + 1);
 
     size_t length_to_parse = strlen(new_var);
 
@@ -28,13 +33,11 @@ int export(char * new_var){
     if (*(curr_char) == '=') {
         curr_char = curr_char + 1;
         total_chars_parsed = total_chars_parsed + 1;
-    }else {
-        return -1;
+        return;
     }
-
     //check if there are characters remaining after =
     if (total_chars_parsed >= length_to_parse) {
-        return -1;
+        return;
     }
 
     //parse out the var value
@@ -47,11 +50,13 @@ int export(char * new_var){
     }
 
     //set the var value
-    int set_res = setenv(name, value, 1);
-    return set_res;
+    setenv(name, value, 1);
 }
 
-void pen_chirp(char * var) {
+void pen_chirp(char ** args, history * hist, size_t arg_count) {
+    (void)hist;
+    (void)arg_count;
+    char * var = *(args + 1);
     char * value = getenv(var);
     if (value != NULL) {
         printf("(•ᴗ•)ゝ->%s\n", value);
@@ -150,7 +155,9 @@ int add_to_history(history * hist, char * full_cmmd, char * command, char ** arg
     return 0;
 }
 
-void print_history(history * hist) {
+void pen_print_history(char ** args, history * hist, size_t arg_count) {
+    (void)args;
+    (void)arg_count;
     for (int i = 0; i < hist->cells_filled; i++) {
         printf("%s", (*(hist->entries + i))->full_cmmd);
     }

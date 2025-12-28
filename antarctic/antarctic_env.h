@@ -36,8 +36,8 @@ typedef struct {
 } history;
 
 //environment manipulation library
-int export(char * new_var);
-void pen_chirp(char * var);
+void pen_export(char ** args, history * hist, size_t arg_count);
+void pen_chirp(char ** args, history * hist, size_t arg_count);
 
 void print_antarctic_vars();
 
@@ -52,6 +52,6 @@ void clear_entry(history_entry * entry);
 
 int add_to_history(history * hist, char * full_cmmd, char * command, char ** args, size_t command_len, size_t arg_count);
 
-void print_history(history * hist);
+void pen_print_history(char ** args, history * hist, size_t arg_count);
 
 #endif //PENGUIN_ANTARCTIC_ENV_H

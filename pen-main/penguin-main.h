@@ -13,6 +13,11 @@
 #include <sys/wait.h>
 #include "../antarctic/antarctic_env.h"
 
+typedef struct {
+    char * command;
+    void (*pen_func)(char ** args, history *, size_t arg_count);
+} pen_builtin;
+
 typedef enum {
     QUOTE_TOKEN,
     TOKEN
@@ -25,14 +30,24 @@ size_t parse(char ** tokens, char * input, size_t n);
 int waddle(char * base_command, char ** args);
 
 //methods to handle build in shell commands
-void pen_exit(history * hist);
-void pen_pwd();
-void pen_cd(char ** args);
+void pen_exit(char ** args, history * hist, size_t arg_count);
+void pen_pwd(char ** args, history * hist, size_t arg_count);
+void pen_cd(char ** args, history * hist, size_t arg_count);
 
 //main shell loop commands
 void greet();
 int clean_up(history * hist);
 void free_tokens(char ** tokens, size_t arg_count);
 int run();
+
+static pen_builtin pen_builtins[] = {
+    {"cd", pen_cd },
+    { "chirp", pen_chirp},
+    { "history", pen_print_history},
+    { "pwd", pen_pwd },
+    { "xpt", pen_export}
+};
+
+void (*pen_lookup(char ** args))(char **, history *, size_t arg_count);
 
 #endif //PENGUIN_PENGUIN_MAIN_H

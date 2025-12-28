@@ -39,6 +39,31 @@ size_t parse(char ** tokens, char * input, size_t n) {
     return token_counter + 1;
 }
 
+ void (*pen_lookup(char ** args))(char **, history *, size_t arg_count) {
+    //algo, first see if first token is less than the first builtin or greater than the last builtin, if not then binary search
+    if (strcmp(*args, "cd") >= 0 && strcmp(*args, "xpt") <= 0) {
+        int low = 0;
+        int high = 4;
+        while (low <= high) {
+            int mid = low + ((high - low) / 2);
+            pen_builtin builtin = pen_builtins[mid];
+            int comp_val = strcmp(*args, builtin.command);
+            if (comp_val == 0) {
+                return builtin.pen_func;
+            }
+
+            if (comp_val > 0) {
+                low = mid + 1;
+            }else {
+                high = mid - 1;
+            }
+        }
+    }
+
+     return NULL;
+}
+
+
 int waddle(char * base_command, char ** args) {
 
     pid_t pid;
@@ -62,19 +87,27 @@ int waddle(char * base_command, char ** args) {
 
 }
 
-void pen_exit(history * hist) {
+void pen_exit(char ** args, history * hist, size_t arg_count) {
+    (void)args;
+    (void)arg_count;
     clean_up(hist);
+    free_tokens(args, arg_count);
     printf("Goodbye (•ᴗ•)ゝ\n");
     exit(0);
 }
 
-void pen_pwd() {
+void pen_pwd(char ** args, history * hist, size_t arg_count) {
+    (void)args;
+    (void)hist;
+    (void)arg_count;
     char cwd[MAX_PATH_LEN] = {0};
     getcwd(cwd, MAX_PATH_LEN);
     printf("%s\n", cwd);
 }
 
-void pen_cd(char ** args) {
+void pen_cd(char ** args, history * hist, size_t arg_count) {
+    (void)hist;
+    (void)arg_count;
     int cd_res = -1;
     if (*(args + 1) == NULL || strcmp(*(args + 1), "*") == 0) {
         char * home_dir = getenv("HOME");
@@ -141,22 +174,13 @@ int run() {
 
         size_t arg_count = parse(tokens, cmmd, strlen(cmmd));
 
-        if (strcmp(*(tokens), "exit") == 0) {
-            free_tokens(tokens, arg_count);
-            pen_exit(hist);
-        }else if (strcmp(*(tokens), "pwd") == 0) {
-            pen_pwd();
-        }else if (strcmp(*(tokens), "cd") == 0) {
-            pen_cd(tokens);
-        }else if (strcmp(*(tokens), "xpt") == 0 || strcasecmp(*(tokens), "export") == 0) {
-            export(*(tokens + 1));
-        }else if (strcmp(*(tokens), "history") == 0) {
-            print_history(hist);
-        }else if (strcmp(*(tokens), "chirp") == 0) {
-            pen_chirp(*(tokens + 1));
-        }else {
+        void (*pen_func)(char ** args, history *, size_t arg_c) = pen_lookup(tokens);
+
+        if (pen_func == NULL) {
             //execute the entered command
             waddle(*(tokens), tokens);
+        }else {
+            pen_func(tokens, hist, arg_count);
         }
 
         if (strcmp(*(tokens), "history") != 0) {
