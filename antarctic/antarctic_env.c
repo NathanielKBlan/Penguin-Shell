@@ -88,6 +88,14 @@ history_entry * init_entry(size_t command_len, size_t arg_count) {
     return new_entry;
 }
 
+void fill_entry(history_entry ** entry, char * full_cmmd, char * command, char ** args, size_t command_len, size_t arg_count) {
+    memcpy((*entry)->full_cmmd, full_cmmd, command_len);
+    memcpy((*entry)->command, command, strlen(command));
+    for (int i = 0; i < arg_count; i++) {
+        memcpy(*((*entry)->args + i), *(args + i), sizeof(char) * MAX_ARG_LEN);
+    }
+}
+
 void clear_entry(history_entry * entry) {
     free(entry->full_cmmd);
     free(entry->command);
@@ -114,11 +122,7 @@ int add_to_history(history * hist, char * full_cmmd, char * command, char ** arg
     }
 
     //deep copy the full command, command, and arguments
-    memcpy((*next_entry)->full_cmmd, full_cmmd, command_len);
-    memcpy((*next_entry)->command, command, strlen(command));
-    for (int i = 0; i < arg_count; i++) {
-        memcpy(*((*next_entry)->args + i), *(args + i), sizeof(char) * MAX_ARG_LEN);
-    }
+    fill_entry(next_entry, full_cmmd, command, args, command_len, arg_count);
 
     //set the argument count
     (*next_entry)->arg_count = arg_count;

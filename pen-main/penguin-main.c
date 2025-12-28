@@ -7,6 +7,8 @@
 //TODO handle case of quotes
 size_t parse(char ** tokens, char * input, size_t n) {
 
+    parser_state state = TOKEN;
+
     *(tokens) = malloc(sizeof(char *) * MAX_ARG_LEN);
     memset(*(tokens), 0, sizeof(char *) * MAX_ARG_LEN);
 
@@ -18,12 +20,16 @@ size_t parse(char ** tokens, char * input, size_t n) {
             break;
         }
 
-        if (*(input + i) == ' ') {
+        if (*(input + i) == ' ' && state == TOKEN) {
             *(*(tokens + token_counter) + curr_tok_ptr) = '\0';
             token_counter = token_counter + 1;
             *(tokens + token_counter) = malloc(sizeof(char *) * MAX_ARG_LEN);
             memset(*(tokens + token_counter), 0, sizeof(char *) * MAX_ARG_LEN);
             curr_tok_ptr = 0;
+        }else if (*(input + i) == '"' && state == TOKEN) {
+            state = QUOTE_TOKEN;
+        }else if(*(input + i) == '"' && state == QUOTE_TOKEN) {
+            state = TOKEN;
         }else{
             *(*(tokens + token_counter) + curr_tok_ptr) = *(input + i);
             curr_tok_ptr = curr_tok_ptr + 1;

@@ -13,6 +13,11 @@
 #include <sys/wait.h>
 #include "../antarctic/antarctic_env.h"
 
+typedef enum {
+    QUOTE_TOKEN,
+    TOKEN
+} parser_state;
+
 //parsing method for commands, results of parse saved in tokens, n represents the length of the input
 size_t parse(char ** tokens, char * input, size_t n);
 
