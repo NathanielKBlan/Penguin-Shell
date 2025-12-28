@@ -51,6 +51,15 @@ int export(char * new_var){
     return set_res;
 }
 
+void pen_chirp(char * var) {
+    char * value = getenv(var);
+    if (value != NULL) {
+        printf("(•ᴗ•)ゝ->%s\n", value);
+    }else {
+        printf("(•ᴖ•)ゝ Penguin couldn't find %s\n", var);
+    }
+}
+
 //history management library
 history * init_history() {
     history * hist = malloc(sizeof(history));

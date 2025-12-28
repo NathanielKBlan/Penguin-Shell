@@ -4,7 +4,6 @@
 #include "penguin-main.h"
 
 //returns a set of parsed tokens and the amount of tokens found, right now this is just to parse command args
-//TODO handle case of quotes
 size_t parse(char ** tokens, char * input, size_t n) {
 
     parser_state state = TOKEN;
@@ -153,8 +152,9 @@ int run() {
             export(*(tokens + 1));
         }else if (strcmp(*(tokens), "history") == 0) {
             print_history(hist);
-        }
-        else {
+        }else if (strcmp(*(tokens), "chirp") == 0) {
+            pen_chirp(*(tokens + 1));
+        }else {
             //execute the entered command
             waddle(*(tokens), tokens);
         }

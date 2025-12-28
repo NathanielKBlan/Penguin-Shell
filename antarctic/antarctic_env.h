@@ -37,6 +37,7 @@ typedef struct {
 
 //environment manipulation library
 int export(char * new_var);
+void pen_chirp(char * var);
 
 void print_antarctic_vars();
 
