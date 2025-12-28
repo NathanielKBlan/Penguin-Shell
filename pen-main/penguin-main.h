@@ -43,6 +43,7 @@ int run();
 static pen_builtin pen_builtins[] = {
     {"cd", pen_cd },
     { "chirp", pen_chirp},
+    {"exit", pen_exit},
     { "history", pen_print_history},
     { "pwd", pen_pwd },
     { "xpt", pen_export}
