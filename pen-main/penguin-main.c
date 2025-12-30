@@ -147,10 +147,6 @@ int run(int argc, char ** argv) {
         //get user input
         if ((cmmd = readline(prompt)) != NULL) {
 
-            if (cmmd && *cmmd) {
-                add_history(cmmd);
-            }
-
             //tokenize the command and fetch the args as well
             char ** tokens = malloc(sizeof(char *) * TOK_LIM);
             memset(tokens, 0, sizeof(char *) * TOK_LIM);
@@ -166,8 +162,13 @@ int run(int argc, char ** argv) {
                 pen_func(tokens, hist, arg_count);
             }
 
-            if (strcmp(*(tokens), "history") != 0) {
+            int hist_comp = strcmp(*(tokens), "history");
+            if (hist_comp != 0) {
                 add_to_history(hist, cmmd, *(tokens), tokens, strlen(cmmd), arg_count);
+            }
+
+            if (cmmd && *cmmd && hist_comp != 0) {
+                add_history(cmmd);
             }
 
             free_tokens(tokens, arg_count);
