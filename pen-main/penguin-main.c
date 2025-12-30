@@ -81,7 +81,7 @@ void pen_cd(char ** args, history * hist, size_t arg_count) {
     }else {
         cd_res = chdir(*(args + 1));
         if (cd_res == -1) {
-            printf("Could not find or no such directory exists. :(\n");
+            printf("Could not find directory or no such directory exists. :(\n");
         }
     }
 
