@@ -12,3 +12,5 @@ add_executable(penguin main.c
         pen-lan/pen_lan.c)
 
 target_include_directories(penguin PRIVATE pen-main antarctic pen-lan)
+
+target_link_libraries(penguin PRIVATE readline)

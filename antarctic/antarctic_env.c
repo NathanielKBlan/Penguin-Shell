@@ -167,6 +167,6 @@ void pen_print_history(char ** args, history * hist, size_t arg_count) {
     (void)args;
     (void)arg_count;
     for (int i = 0; i < hist->cells_filled; i++) {
-        printf("%s", (*(hist->entries + i))->full_cmmd);
+        printf("%s\n", (*(hist->entries + i))->full_cmmd);
     }
 }

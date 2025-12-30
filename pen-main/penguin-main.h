@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <getopt.h>
+#include <readline/readline.h>
 #include "../antarctic/antarctic_env.h"
 #include "pen_lan.h"
 

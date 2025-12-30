@@ -132,37 +132,40 @@ int run(int argc, char ** argv) {
     history * hist = init_history();
 
     char cwd[MAX_PATH_LEN] = {0};
-    char cmmd[MAX_CMMD_LEN] = {0};
+
+    char * cmmd;
 
     while (1) {
 
         //get the current working directory
         getcwd(cwd, MAX_PATH_LEN);
 
-        printf("%s (•ᴗ•)ゝ ", cwd);
+        char prompt[MAX_PATH_LEN + 16];
+
+        snprintf(prompt, MAX_PATH_LEN + 16, "%s (•ᴗ•)ゝ ", cwd);
 
         //get user input
-        fgets(cmmd, MAX_CMMD_LEN, stdin);
+        if ((cmmd = readline(prompt)) != NULL) {
+            //tokenize the command and fetch the args as well
+            char ** tokens = malloc(sizeof(char *) * TOK_LIM);
+            memset(tokens, 0, sizeof(char *) * TOK_LIM);
 
-        //tokenize the command and fetch the args as well
-        char ** tokens = malloc(sizeof(char *) * TOK_LIM);
-        memset(tokens, 0, sizeof(char *) * TOK_LIM);
+            size_t arg_count = tokenize(tokens, cmmd, strlen(cmmd));
 
-        size_t arg_count = tokenize(tokens, cmmd, strlen(cmmd));
+            void (*pen_func)(char ** args, history *, size_t arg_c) = pen_lookup(tokens);
 
-        void (*pen_func)(char ** args, history *, size_t arg_c) = pen_lookup(tokens);
+            if (pen_func == NULL) {
+                //execute the entered command
+                waddle(*(tokens), tokens);
+            }else {
+                pen_func(tokens, hist, arg_count);
+            }
 
-        if (pen_func == NULL) {
-            //execute the entered command
-            waddle(*(tokens), tokens);
-        }else {
-            pen_func(tokens, hist, arg_count);
+            if (strcmp(*(tokens), "history") != 0) {
+                add_to_history(hist, cmmd, *(tokens), tokens, strlen(cmmd), arg_count);
+            }
+
+            free_tokens(tokens, arg_count);
         }
-
-        if (strcmp(*(tokens), "history") != 0) {
-            add_to_history(hist, cmmd, *(tokens), tokens, strlen(cmmd), arg_count);
-        }
-
-        free_tokens(tokens, arg_count);
     }
 }
