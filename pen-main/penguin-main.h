@@ -11,8 +11,24 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <getopt.h>
 #include "../antarctic/antarctic_env.h"
 #include "pen_lan.h"
+
+#define USAGE   \
+    "The penguin shell (•ᴗ•)ゝ\n" \
+    "Run the shell by calling the penguin executable, be sure to set penguin in your path to call from any dir. \n"\
+    "basic commands:\n"\
+    "  cd [path]                             Change directory to path (use * for home directory).\n" \
+    "  chirp [environment variable]          Outputs out the value of the specified environment variable.\n" \
+    "  exit                                  Closes the shell.\n"\
+    "  history                               Outputs command history throughout the shell's runtime up to a max of 128 commands (latest commands).\n" \
+    "  pwd                                   Outputs the current working directory.\n" \
+    "  xpt [variable name]=[value]           Sets a new environment variable with the specificied value.\n" \
+
+static struct option pen_options[] = {
+    {"help", no_argument, NULL, 'h'}
+};
 
 typedef struct {
     char * command;
@@ -31,7 +47,7 @@ void pen_cd(char ** args, history * hist, size_t arg_count);
 void greet();
 int clean_up(history * hist);
 void free_tokens(char ** tokens, size_t arg_count);
-int run();
+int run(int argc, char ** argv);
 
 static pen_builtin pen_builtins[] = {
     {"cd", pen_cd },

@@ -53,7 +53,6 @@ int waddle(char * base_command, char ** args) {
 
 void pen_exit(char ** args, history * hist, size_t arg_count) {
     (void)args;
-    (void)arg_count;
     clean_up(hist);
     free_tokens(args, arg_count);
     printf("Goodbye (•ᴗ•)ゝ\n");
@@ -113,7 +112,20 @@ void free_tokens(char ** tokens, size_t arg_count) {
     free(tokens);
 }
 
-int run() {
+int run(int argc, char ** argv) {
+
+     int option_char = 0;
+     while (((option_char) = getopt_long(argc, argv, "h::", pen_options, NULL)) != -1) {
+         switch (option_char) {
+             case 'h':
+                 fprintf(stdout, "%s", USAGE);
+                 exit(0);
+                 break;
+             default:
+                 fprintf(stdout, "%s", USAGE);
+                 exit(1);
+         }
+     }
 
     greet();
 

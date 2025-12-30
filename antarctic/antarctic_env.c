@@ -11,7 +11,10 @@ void pen_export(char ** args, history * hist, size_t arg_count){
     //state machine that checks for that =
 
     (void)hist;
-    (void)arg_count;
+
+    if (arg_count < 2) {
+        return;
+    }
 
     char * new_var = *(args + 1);
 
@@ -54,8 +57,13 @@ void pen_export(char ** args, history * hist, size_t arg_count){
 }
 
 void pen_chirp(char ** args, history * hist, size_t arg_count) {
+
     (void)hist;
-    (void)arg_count;
+
+    if (arg_count < 2) {
+        return;
+    }
+
     char * var = *(args + 1);
     char * value = getenv(var);
     if (value != NULL) {
