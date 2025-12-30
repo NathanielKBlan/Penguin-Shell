@@ -146,6 +146,11 @@ int run(int argc, char ** argv) {
 
         //get user input
         if ((cmmd = readline(prompt)) != NULL) {
+
+            if (cmmd && *cmmd) {
+                add_history(cmmd);
+            }
+
             //tokenize the command and fetch the args as well
             char ** tokens = malloc(sizeof(char *) * TOK_LIM);
             memset(tokens, 0, sizeof(char *) * TOK_LIM);
@@ -166,6 +171,7 @@ int run(int argc, char ** argv) {
             }
 
             free_tokens(tokens, arg_count);
+            free(cmmd);
         }
     }
 }

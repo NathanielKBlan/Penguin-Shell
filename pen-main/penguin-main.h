@@ -13,6 +13,7 @@
 #include <sys/wait.h>
 #include <getopt.h>
 #include <readline/readline.h>
+#include <readline/history.h>
 #include "../antarctic/antarctic_env.h"
 #include "pen_lan.h"
 
