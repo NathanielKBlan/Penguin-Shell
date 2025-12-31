@@ -156,6 +156,17 @@ int run(int argc, char ** argv) {
 
             size_t arg_count = tokenize(tokens, cmmd, strlen(cmmd));
 
+            int hist_comp = strcmp(*(tokens), "history");
+            if (hist_comp != 0) {
+                add_to_history(hist, cmmd, *(tokens), tokens, strlen(cmmd), arg_count);
+            }
+
+            if (cmmd && *cmmd && hist_comp != 0) {
+                add_history(cmmd);
+            }
+
+            free(cmmd);
+
             void (*pen_func)(char ** args, history *, size_t arg_c) = pen_lookup(tokens);
 
             if (pen_func == NULL) {
@@ -169,17 +180,7 @@ int run(int argc, char ** argv) {
                 }
             }
 
-            int hist_comp = strcmp(*(tokens), "history");
-            if (hist_comp != 0) {
-                add_to_history(hist, cmmd, *(tokens), tokens, strlen(cmmd), arg_count);
-            }
-
-            if (cmmd && *cmmd && hist_comp != 0) {
-                add_history(cmmd);
-            }
-
             free_tokens(tokens, arg_count);
-            free(cmmd);
         }
     }
 }
