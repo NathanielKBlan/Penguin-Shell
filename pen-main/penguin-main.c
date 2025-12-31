@@ -3,16 +3,19 @@
 //
 #include "penguin-main.h"
 
- void (*pen_lookup(char ** args))(char **, history *, size_t arg_count) {
+ void (*pen_lookup(char ** args))(char **, history *, size_t) {
     //algo, first see if first token is less than the first builtin or greater than the last builtin, if not then binary search
     if (strcmp(*args, "cd") >= 0 && strcmp(*args, "xpt") <= 0) {
         int low = 0;
-        int high = 4;
+        int high = 5;
         while (low <= high) {
             int mid = low + ((high - low) / 2);
             pen_builtin builtin = pen_builtins[mid];
             int comp_val = strcmp(*args, builtin.command);
             if (comp_val == 0) {
+                if (*(args + 1) != NULL && (strcmp(*(args + 1), "--help") == 0 || strcmp(*(args + 1), "-h") == 0)) {
+                    fprintf(stdout, "%s", pen_builtin_usages[mid].usage);
+                }
                 return builtin.pen_func;
             }
 
@@ -159,7 +162,11 @@ int run(int argc, char ** argv) {
                 //execute the entered command
                 waddle(*(tokens), tokens);
             }else {
-                pen_func(tokens, hist, arg_count);
+                if (*(tokens + 1) != NULL && strcmp(*(tokens + 1), "-h") != 0 && strcmp(*(tokens + 1), "--help") != 0) {
+                    pen_func(tokens, hist, arg_count);
+                } else if (*(tokens + 1) == NULL) {
+                    pen_func(tokens, hist, arg_count);
+                }
             }
 
             int hist_comp = strcmp(*(tokens), "history");

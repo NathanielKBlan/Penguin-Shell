@@ -37,6 +37,11 @@ typedef struct {
     void (*pen_func)(char ** args, history *, size_t arg_count);
 } pen_builtin;
 
+typedef struct {
+    char * command;
+    char * usage;
+} pen_builtin_usage;
+
 //method that handles execution of the commands
 int waddle(char * base_command, char ** args);
 
@@ -58,6 +63,15 @@ static pen_builtin pen_builtins[] = {
     { "history", pen_print_history},
     { "pwd", pen_pwd },
     { "xpt", pen_export}
+};
+
+static pen_builtin_usage pen_builtin_usages[] = {
+    {"cd", "cd [path], Change directory to path (use * for home directory).\n"  },
+    { "chirp", "chirp [environment variable], Outputs out the value of the specified environment variable.\n"},
+    {"exit", "exit, Closes the shell.\n"},
+    { "history", "history, Outputs command history throughout the shell's runtime up to a max of 128 commands (latest commands).\n"},
+    { "pwd", "pwd, Outputs the current working directory.\n" },
+    { "xpt", "xpt [variable name]=[value], Sets a new environment variable with the specified value.\n"}
 };
 
 void (*pen_lookup(char ** args))(char **, history *, size_t arg_count);
