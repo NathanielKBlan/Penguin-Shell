@@ -14,6 +14,11 @@ The penguin executable should now be in the directory created with the TARGET BU
 
 Optional: Add TARGET BUILD DIRECTORY to PATH
 
+## Requirements
+* OS: Linux
+* CMake: 3.10 or greater
+* Readline: install via ```sudo apt install libreadline-dev```
+
 ## Usage
 ```
 penguin
