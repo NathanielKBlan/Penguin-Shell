@@ -127,7 +127,6 @@ void clear_entry(history_entry * entry) {
     free(entry->args);
 }
 
-
 //TODO handle duplicate or empty case
 int add_to_history(history * hist, char * full_cmmd, char * command, char ** args, size_t command_len, size_t arg_count) {
 
