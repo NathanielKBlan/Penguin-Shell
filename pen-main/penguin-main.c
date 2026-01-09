@@ -58,7 +58,7 @@ void pen_exit(char ** args, history * hist, size_t arg_count) {
     (void)args;
     clean_up(hist);
     free_tokens(args, arg_count);
-    printf("Goodbye (•ᴗ•)ゝ\n");
+    printf("\x1b[1;36m" "Goodbye (•ᴗ•)ゝ\n" "\x1b[0m");
     exit(0);
 }
 
@@ -143,9 +143,9 @@ int run(int argc, char ** argv) {
         //get the current working directory
         getcwd(cwd, MAX_PATH_LEN);
 
-        char prompt[MAX_PATH_LEN + 16];
+        char prompt[MAX_PATH_LEN + 36];
 
-        snprintf(prompt, MAX_PATH_LEN + 16, "%s (•ᴗ•)ゝ ", cwd);
+        snprintf(prompt, MAX_PATH_LEN + 36, "\x1b[1;36m" "%s (•ᴗ•)ゝ " "\x1b[0m", cwd);
 
         //get user input
         if ((cmmd = readline(prompt)) != NULL) {
