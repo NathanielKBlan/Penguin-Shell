@@ -34,7 +34,7 @@ static struct option pen_options[] = {
 
 typedef struct {
     char * command;
-    void (*pen_func)(char ** args, history *, size_t arg_count);
+    void (*pen_func)(char ** args, history *, pen_alias_table *, size_t);
 } pen_builtin;
 
 typedef struct {
@@ -46,9 +46,9 @@ typedef struct {
 int waddle(char * base_command, char ** args);
 
 //methods to handle build in shell commands
-void pen_exit(char ** args, history * hist, size_t arg_count);
-void pen_pwd(char ** args, history * hist, size_t arg_count);
-void pen_cd(char ** args, history * hist, size_t arg_count);
+void pen_exit(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count);
+void pen_pwd(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count);
+void pen_cd(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count);
 
 //main shell loop commands
 void greet();
@@ -57,6 +57,7 @@ void free_tokens(char ** tokens, size_t arg_count);
 int run(int argc, char ** argv);
 
 static pen_builtin pen_builtins[] = {
+    {"alias", pen_export},
     {"cd", pen_cd },
     { "chirp", pen_chirp},
     {"exit", pen_exit},
@@ -66,6 +67,7 @@ static pen_builtin pen_builtins[] = {
 };
 
 static pen_builtin_usage pen_builtin_usages[] = {
+    {"alias", "alias [alias name]=[alias value], Creates an alias.\n"},
     {"cd", "cd [path], Change directory to path (use * for home directory).\n"  },
     { "chirp", "chirp [environment variable], Outputs out the value of the specified environment variable.\n"},
     {"exit", "exit, Closes the shell.\n"},
@@ -74,6 +76,5 @@ static pen_builtin_usage pen_builtin_usages[] = {
     { "xpt", "xpt [variable name]=[value], Sets a new environment variable with the specified value.\n"}
 };
 
-void (*pen_lookup(char ** args))(char **, history *, size_t arg_count);
-
+void (*pen_lookup(char ** args))(char **, history *, pen_alias_table *, size_t);
 #endif //PENGUIN_PENGUIN_MAIN_H

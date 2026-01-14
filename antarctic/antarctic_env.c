@@ -4,7 +4,65 @@
 
 #include "antarctic_env.h"
 
-void pen_export(char ** args, history * hist, size_t arg_count){
+pen_alias_table * init_alias_table() {
+    pen_alias_table * alias_table = malloc(sizeof(pen_alias_table));
+    alias_table->alias_count = 0;
+    alias_table->table_limit = INITIAL_ALIAS_LIM;
+    alias_table->next_free_index = 0;
+
+    for (int i = 0; i < INITIAL_ALIAS_LIM; i++) {
+        alias_table->aliases[i].alias_name = NULL;
+        alias_table->aliases[i].alias_value = NULL;
+        alias_table->aliases[i].free = 1;
+    }
+
+    return alias_table;
+}
+
+void add_alias(pen_alias_table * alias_table, char * alias, char * value) {
+
+    if (alias_table->aliases[alias_table->next_free_index].free == 1) {
+
+        alias_table->aliases[alias_table->next_free_index].alias_name = malloc(sizeof(char) * (strlen(alias) + 1));
+        memcpy(alias_table->aliases[alias_table->next_free_index].alias_name, alias, strlen(alias) + 1);
+
+        alias_table->aliases[alias_table->next_free_index].alias_value = malloc(sizeof(char) * (strlen(value) + 1));
+        memcpy(alias_table->aliases[alias_table->next_free_index].alias_value, value, sizeof(char) * (strlen(value) + 1));
+
+        alias_table->aliases[alias_table->next_free_index].free = 0;
+        update_next_free_index(alias_table, alias_table->next_free_index);
+    }else {
+        //TODO throw error here, halt the shell
+    }
+
+}
+
+void update_next_free_index(pen_alias_table * alias_table, int last_free_index) {
+
+    if (last_free_index < alias_table->table_limit - 1 && alias_table->aliases[last_free_index + 1].free == 1) {
+        alias_table->next_free_index = last_free_index + 1;
+    }else {
+        for (int i = 0; i < alias_table->table_limit; i++) {
+            if (alias_table->aliases[i].free == 1) {
+                alias_table->next_free_index = i;
+                return;
+            }
+        }
+        //TODO throw error here, halt the shell
+    }
+
+}
+
+char * alias_lookup(pen_alias_table * alias_table, char * alias) {
+    for (int i = 0; i < alias_table->table_limit; i++) {
+        if (alias_table->aliases[i].alias_name != NULL && strcmp(alias_table->aliases[i].alias_name, alias) == 0) {
+            return alias_table->aliases[i].alias_value;
+        }
+    }
+    return NULL;
+}
+
+void pen_export(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count){
 
     //the scheme will be something like VAR_NAME=String
     //so to verify that it's a valid variable entry we can just do a simple
@@ -36,6 +94,7 @@ void pen_export(char ** args, history * hist, size_t arg_count){
     if (*(curr_char) == '=') {
         curr_char = curr_char + 1;
         total_chars_parsed = total_chars_parsed + 1;
+    }else {
         return;
     }
     //check if there are characters remaining after =
@@ -53,10 +112,15 @@ void pen_export(char ** args, history * hist, size_t arg_count){
     }
 
     //set the var value
-    setenv(name, value, 1);
+    if (strcmp(*args, "xpt") == 0) {
+        setenv(name, value, 1);
+    }else if (strcmp(*args, "alias") == 0) {
+        add_alias(alias_table, name, value);
+    }
+
 }
 
-void pen_chirp(char ** args, history * hist, size_t arg_count) {
+void pen_chirp(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count) {
 
     (void)hist;
 
@@ -162,7 +226,7 @@ int add_to_history(history * hist, char * full_cmmd, char * command, char ** arg
     return 0;
 }
 
-void pen_print_history(char ** args, history * hist, size_t arg_count) {
+void pen_print_history(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count) {
     (void)args;
     (void)arg_count;
     for (int i = 0; i < hist->cells_filled; i++) {

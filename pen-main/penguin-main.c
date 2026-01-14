@@ -3,9 +3,9 @@
 //
 #include "penguin-main.h"
 
- void (*pen_lookup(char ** args))(char **, history *, size_t) {
+ void (*pen_lookup(char ** args))(char **, history *, pen_alias_table *, size_t) {
     //algo, first see if first token is less than the first builtin or greater than the last builtin, if not then binary search
-    if (strcmp(*args, "cd") >= 0 && strcmp(*args, "xpt") <= 0) {
+    if (strcmp(*args, "alias") >= 0 && strcmp(*args, "xpt") <= 0) {
         int low = 0;
         int high = 5;
         while (low <= high) {
@@ -27,7 +27,7 @@
         }
     }
 
-     return NULL;
+    return NULL;
 }
 
 
@@ -54,7 +54,7 @@ int waddle(char * base_command, char ** args) {
 
 }
 
-void pen_exit(char ** args, history * hist, size_t arg_count) {
+void pen_exit(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count) {
     (void)args;
     clean_up(hist);
     free_tokens(args, arg_count);
@@ -62,7 +62,7 @@ void pen_exit(char ** args, history * hist, size_t arg_count) {
     exit(0);
 }
 
-void pen_pwd(char ** args, history * hist, size_t arg_count) {
+void pen_pwd(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count) {
     (void)args;
     (void)hist;
     (void)arg_count;
@@ -71,7 +71,7 @@ void pen_pwd(char ** args, history * hist, size_t arg_count) {
     printf("%s\n", cwd);
 }
 
-void pen_cd(char ** args, history * hist, size_t arg_count) {
+void pen_cd(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count) {
     (void)hist;
     (void)arg_count;
     int cd_res = -1;
@@ -133,6 +133,7 @@ int run(int argc, char ** argv) {
     greet();
 
     history * hist = init_history();
+    pen_alias_table * alias_table = init_alias_table();
 
     char cwd[MAX_PATH_LEN] = {0};
 
@@ -154,6 +155,12 @@ int run(int argc, char ** argv) {
             char ** tokens = malloc(sizeof(char *) * TOK_LIM);
             memset(tokens, 0, sizeof(char *) * TOK_LIM);
 
+            char * alias = alias_lookup(alias_table, cmmd);
+
+            if (alias != NULL) {
+                cmmd = alias;
+            }
+
             size_t arg_count = tokenize(tokens, cmmd, strlen(cmmd));
 
             int hist_comp = strcmp(*(tokens), "history");
@@ -165,18 +172,20 @@ int run(int argc, char ** argv) {
                 add_history(cmmd);
             }
 
-            free(cmmd);
+            if (alias == NULL) {
+                free(cmmd);
+            }
 
-            void (*pen_func)(char ** args, history *, size_t arg_c) = pen_lookup(tokens);
+            void (*pen_func)(char **, history *, pen_alias_table *, size_t) = pen_lookup(tokens);
 
             if (pen_func == NULL) {
                 //execute the entered command
                 waddle(*(tokens), tokens);
             }else {
                 if (*(tokens + 1) != NULL && strcmp(*(tokens + 1), "-h") != 0 && strcmp(*(tokens + 1), "--help") != 0) {
-                    pen_func(tokens, hist, arg_count);
+                    pen_func(tokens, hist, alias_table, arg_count);
                 } else if (*(tokens + 1) == NULL) {
-                    pen_func(tokens, hist, arg_count);
+                    pen_func(tokens, hist, alias_table, arg_count);
                 }
             }
 

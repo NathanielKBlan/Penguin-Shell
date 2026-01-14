@@ -20,6 +20,7 @@
 #define VAR_NAME_LIM 256
 #define VAR_VAL_LIM 1024
 #define HISTORY_LIM 128
+#define INITIAL_ALIAS_LIM 32
 
 typedef struct {
     char * full_cmmd;
@@ -35,9 +36,22 @@ typedef struct {
     history_entry ** entries;
 } history;
 
+typedef struct {
+    int free;
+    char * alias_name;
+    char * alias_value;
+} alias_t;
+
+typedef struct {
+    alias_t aliases[INITIAL_ALIAS_LIM];
+    size_t alias_count;
+    size_t table_limit;
+    int next_free_index;
+} pen_alias_table;
+
 //environment manipulation library
-void pen_export(char ** args, history * hist, size_t arg_count);
-void pen_chirp(char ** args, history * hist, size_t arg_count);
+void pen_export(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count);
+void pen_chirp(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count);
 
 void print_antarctic_vars();
 
@@ -52,6 +66,16 @@ void clear_entry(history_entry * entry);
 
 int add_to_history(history * hist, char * full_cmmd, char * command, char ** args, size_t command_len, size_t arg_count);
 
-void pen_print_history(char ** args, history * hist, size_t arg_count);
+void pen_print_history(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count);
+
+pen_alias_table * init_alias_table();
+void cleanup_alias_table(pen_alias_table * table);
+
+//looks up existing aliases
+char * alias_lookup(pen_alias_table * alias_table, char * alias);
+
+void add_alias(pen_alias_table * alias_table, char * alias, char * value);
+
+void update_next_free_index(pen_alias_table * alias_table, int last_free_index);
 
 #endif //PENGUIN_ANTARCTIC_ENV_H
