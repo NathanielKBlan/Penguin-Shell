@@ -34,15 +34,19 @@ size_t tokenize(char ** tokens, char * input, pen_alias_table * table, size_t n)
                 size_t alias_token_count = tokenize(alias_tokens, alias_value, table, strlen(alias_value));
 
                 for (int a = 0; a < alias_token_count; a++) {
-                    memcpy(*(tokens + token_counter), *(alias_tokens + a), strlen(*(alias_tokens + a)));
+                    if (*(tokens + token_counter) == NULL) {
+                        *(tokens + token_counter) = malloc(sizeof(char) * strlen(*(alias_tokens + a)) + 1);
+                    }
+                    memcpy(*(tokens + token_counter), *(alias_tokens + a), strlen(*(alias_tokens + a)) + 1);
                     token_counter = token_counter + 1;
                 }
 
             }else {
                 token_counter = token_counter + 1;
-                *(tokens + token_counter) = malloc(sizeof(char *) * MAX_ARG_LEN);
-                memset(*(tokens + token_counter), 0, sizeof(char *) * MAX_ARG_LEN);
             }
+
+            *(tokens + token_counter) = malloc(sizeof(char *) * MAX_ARG_LEN);
+            memset(*(tokens + token_counter), 0, sizeof(char *) * MAX_ARG_LEN);
 
             curr_tok_ptr = 0;
         }else if (*(input + i) == '"' && state == TOKEN) {
@@ -79,7 +83,7 @@ size_t tokenize(char ** tokens, char * input, pen_alias_table * table, size_t n)
             if (*(tokens + token_counter) == NULL) {
                 *(tokens + token_counter) = malloc(sizeof(char) * strlen(*(alias_tokens + a)) + 1);
             }
-            memcpy(*(tokens + token_counter), *(alias_tokens + a), strlen(*(alias_tokens + a)));
+            memcpy(*(tokens + token_counter), *(alias_tokens + a), strlen(*(alias_tokens + a)) + 1);
             token_counter = token_counter + 1;
         }
 
