@@ -21,6 +21,7 @@
 #define VAR_VAL_LIM 1024
 #define HISTORY_LIM 128
 #define INITIAL_ALIAS_LIM 32
+#define ALIAS_ARG_LIM 16
 
 typedef struct {
     char * full_cmmd;

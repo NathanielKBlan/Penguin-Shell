@@ -6,8 +6,8 @@
  void (*pen_lookup(char ** args))(char **, history *, pen_alias_table *, size_t) {
     //algo, first see if first token is less than the first builtin or greater than the last builtin, if not then binary search
     if (strcmp(*args, "alias") >= 0 && strcmp(*args, "xpt") <= 0) {
-        int low = 0;
-        int high = 5;
+        int low = BUILT_INS_LOW;
+        int high = BUILT_INS_HIGH;
         while (low <= high) {
             int mid = low + ((high - low) / 2);
             pen_builtin builtin = pen_builtins[mid];
@@ -144,9 +144,9 @@ int run(int argc, char ** argv) {
         //get the current working directory
         getcwd(cwd, MAX_PATH_LEN);
 
-        char prompt[MAX_PATH_LEN + 37];
+        char prompt[MAX_PATH_LEN + 35];
 
-        snprintf(prompt, MAX_PATH_LEN + 37, "\033[38;2;0;255;255m" "%s (•ᴗ•)ゝ " "\033[0m", cwd);
+        snprintf(prompt, MAX_PATH_LEN + 35, "\033[38;2;0;255;255m" "%s (•ᴗ•)> " "\033[0m", cwd);
 
         //get user input
         if ((cmmd = readline(prompt)) != NULL) {
@@ -155,13 +155,7 @@ int run(int argc, char ** argv) {
             char ** tokens = malloc(sizeof(char *) * TOK_LIM);
             memset(tokens, 0, sizeof(char *) * TOK_LIM);
 
-            char * alias = alias_lookup(alias_table, cmmd);
-
-            if (alias != NULL) {
-                cmmd = alias;
-            }
-
-            size_t arg_count = tokenize(tokens, cmmd, strlen(cmmd));
+            size_t arg_count = tokenize(tokens, cmmd, alias_table, strlen(cmmd));
 
             int hist_comp = strcmp(*(tokens), "history");
             if (hist_comp != 0) {
@@ -172,9 +166,7 @@ int run(int argc, char ** argv) {
                 add_history(cmmd);
             }
 
-            if (alias == NULL) {
-                free(cmmd);
-            }
+            free(cmmd);
 
             void (*pen_func)(char **, history *, pen_alias_table *, size_t) = pen_lookup(tokens);
 

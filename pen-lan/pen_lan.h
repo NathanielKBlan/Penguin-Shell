@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include <antarctic_env.h>
+#include "antarctic_env.h"
 
 typedef enum {
     VARIABLE_TOKEN,
@@ -16,6 +16,6 @@ typedef enum {
 } parser_state;
 
 //tokenizing method for commands, results of parse saved in tokens, n represents the length of the input
-size_t tokenize(char ** tokens, char * input, size_t n);
+size_t tokenize(char ** tokens, char * input, pen_alias_table * table, size_t n);
 
 #endif //PENGUIN_PEN_LAN_H
