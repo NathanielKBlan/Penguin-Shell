@@ -21,11 +21,13 @@
     "The penguin shell (•ᴗ•)ゝ\n" \
     "Run the shell by calling the penguin executable, be sure to set penguin in your path to call from any dir. \n"\
     "basic commands:\n"\
+    "  alias [alias name]=[alias value]      Creates an alias with the specified name.\n" \
     "  cd [path]                             Change directory to path (use * for home directory).\n" \
     "  chirp [environment variable]          Outputs out the value of the specified environment variable.\n" \
     "  exit                                  Closes the shell.\n"\
     "  history                               Outputs command history throughout the shell's runtime up to a max of 128 commands (latest commands).\n" \
     "  pwd                                   Outputs the current working directory.\n" \
+    "  unalias [alias name]                  Deletes the specified alias.\n" \
     "  xpt [variable name]=[value]           Sets a new environment variable with the specificied value.\n" \
 
 #define BUILT_INS_HIGH 6
@@ -71,7 +73,7 @@ static pen_builtin pen_builtins[] = {
 };
 
 static pen_builtin_usage pen_builtin_usages[] = {
-    {"alias", "alias [alias name]=[alias value], Creates an alias.\n"},
+    {"alias", "alias [alias name]=[alias value], Creates an alias with the specified name.\n"},
     {"cd", "cd [path], Change directory to path (use * for home directory).\n"  },
     { "chirp", "chirp [environment variable], Outputs out the value of the specified environment variable.\n"},
     {"exit", "exit, Closes the shell.\n"},

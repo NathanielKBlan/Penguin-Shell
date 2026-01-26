@@ -145,9 +145,9 @@ int run(int argc, char ** argv) {
         //get the current working directory
         getcwd(cwd, MAX_PATH_LEN);
 
-        char prompt[MAX_PATH_LEN + 35];
+        char prompt[MAX_PATH_LEN + 38];
 
-        snprintf(prompt, MAX_PATH_LEN + 35, "\033[38;2;0;255;255m" "%s (•ᴗ•)> " "\033[0m", cwd);
+        snprintf(prompt, MAX_PATH_LEN + 38, "\033[38;2;0;255;255m" "%s (•ᴗ•)ゝ " "\033[0m", cwd);
 
         //get user input
         if ((cmmd = readline(prompt)) != NULL) {
