@@ -16,6 +16,6 @@ typedef enum {
 } parser_state;
 
 //tokenizing method for commands, results of parse saved in tokens, n represents the length of the input
-size_t tokenize(char ** tokens, char * input, pen_alias_table * table, size_t n);
+size_t tokenize(char ** tokens, char * input, pen_alias_table * table, size_t n, int d);
 
 #endif //PENGUIN_PEN_LAN_H

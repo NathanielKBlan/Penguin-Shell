@@ -5,7 +5,7 @@
 #include "pen_lan.h"
 
 //returns a set of parsed tokens and the amount of tokens found, right now this is just to parse command args
-size_t tokenize(char ** tokens, char * input, pen_alias_table * table, size_t n) {
+size_t tokenize(char ** tokens, char * input, pen_alias_table * table, size_t n, int d) {
 
     parser_state state = TOKEN;
 
@@ -34,16 +34,23 @@ size_t tokenize(char ** tokens, char * input, pen_alias_table * table, size_t n)
                 memset(*(tokens + token_counter), 0, curr_tok_ptr);
 
                 char ** alias_tokens = malloc(sizeof(char *) * ALIAS_ARG_LIM);
-                size_t alias_token_count = tokenize(alias_tokens, alias_value, table, strlen(alias_value));
+
+                size_t alias_token_count = 0;
+
+                if (d < 32) {
+                    alias_token_count = tokenize(alias_tokens, alias_value, table, strlen(alias_value), d + 1);
+                }
 
                 for (int a = 0; a < alias_token_count; a++) {
                     if (*(tokens + token_counter) == NULL) {
                         *(tokens + token_counter) = malloc(sizeof(char) * strlen(*(alias_tokens + a)) + 1);
                     }
                     memcpy(*(tokens + token_counter), *(alias_tokens + a), strlen(*(alias_tokens + a)) + 1);
+                    free(*(alias_tokens + a));
                     token_counter = token_counter + 1;
                 }
 
+                free(alias_tokens);
             }else {
                 token_counter = token_counter + 1;
             }
@@ -84,15 +91,23 @@ size_t tokenize(char ** tokens, char * input, pen_alias_table * table, size_t n)
         memset(*(tokens + token_counter), 0, curr_tok_ptr);
 
         char ** alias_tokens = malloc(sizeof(char *) * ALIAS_ARG_LIM);
-        size_t alias_token_count = tokenize(alias_tokens, alias_value, table, strlen(alias_value));
+
+        size_t alias_token_count = 0;
+
+        if (d < 32) {
+            alias_token_count = tokenize(alias_tokens, alias_value, table, strlen(alias_value), d + 1);
+        }
 
         for (int a = 0; a < alias_token_count; a++) {
             if (*(tokens + token_counter) == NULL) {
                 *(tokens + token_counter) = malloc(sizeof(char) * strlen(*(alias_tokens + a)) + 1);
             }
             memcpy(*(tokens + token_counter), *(alias_tokens + a), strlen(*(alias_tokens + a)) + 1);
+            free(*(alias_tokens + a));
             token_counter = token_counter + 1;
         }
+
+        free(alias_tokens);
 
         if (pre_exapnsion_token_count > 0) {
             token_counter = token_counter - 1;

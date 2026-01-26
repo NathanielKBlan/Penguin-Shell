@@ -156,7 +156,7 @@ int run(int argc, char ** argv) {
             char ** tokens = malloc(sizeof(char *) * TOK_LIM);
             memset(tokens, 0, sizeof(char *) * TOK_LIM);
 
-            size_t arg_count = tokenize(tokens, cmmd, alias_table, strlen(cmmd));
+            size_t arg_count = tokenize(tokens, cmmd, alias_table, strlen(cmmd), 0);
 
             int hist_comp = strcmp(*(tokens), "history");
             if (hist_comp != 0) {
