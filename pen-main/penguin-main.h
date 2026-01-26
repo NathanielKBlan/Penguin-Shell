@@ -30,7 +30,7 @@
     "  unalias [alias name]                  Deletes the specified alias.\n" \
     "  xpt [variable name]=[value]           Sets a new environment variable with the specificied value.\n" \
 
-#define BUILT_INS_HIGH 6
+#define BUILT_INS_HIGH 7
 #define BUILT_INS_LOW 0
 
 static struct option pen_options[] = {
