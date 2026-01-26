@@ -24,9 +24,12 @@ size_t tokenize(char ** tokens, char * input, pen_alias_table * table, size_t n)
             *(*(tokens + token_counter) + curr_tok_ptr) = '\0';
 
             //perform alias expansion here
-            char * alias_value = alias_lookup(table, *(tokens + token_counter));
+            char * alias_value = NULL;
+            if (*(tokens) != NULL && strcmp(*(tokens), "unalias") != 0) {
+                alias_value = alias_lookup(table, *(tokens + token_counter));
+            }
 
-            if (alias_value != NULL) {
+            if (*(tokens) != NULL && strcmp(*(tokens), "unalias") != 0 && alias_value != NULL) {
 
                 memset(*(tokens + token_counter), 0, curr_tok_ptr);
 
@@ -70,9 +73,13 @@ size_t tokenize(char ** tokens, char * input, pen_alias_table * table, size_t n)
 
     //perform alias expansion here for the last token
     size_t pre_exapnsion_token_count = token_counter;
-    char * alias_value = alias_lookup(table, *(tokens + token_counter));
 
-    if (alias_value != NULL) {
+    char * alias_value = NULL;
+    if (*(tokens) != NULL && strcmp(*(tokens), "unalias") != 0) {
+        alias_value = alias_lookup(table, *(tokens + token_counter));
+    }
+
+    if (*(tokens) != NULL && strcmp(*(tokens), "unalias") != 0 && alias_value != NULL) {
 
         memset(*(tokens + token_counter), 0, curr_tok_ptr);
 

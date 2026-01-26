@@ -55,7 +55,7 @@ void pen_cd(char ** args, history * hist, pen_alias_table * alias_table, size_t 
 
 //main shell loop commands
 void greet();
-int clean_up(history * hist);
+int clean_up(history * hist, pen_alias_table * alias_table);
 void free_tokens(char ** tokens, size_t arg_count);
 int run(int argc, char ** argv);
 
@@ -66,6 +66,7 @@ static pen_builtin pen_builtins[] = {
     {"exit", pen_exit},
     { "history", pen_print_history},
     { "pwd", pen_pwd },
+    {"unalias", pen_unalias},
     { "xpt", pen_export}
 };
 
@@ -76,6 +77,7 @@ static pen_builtin_usage pen_builtin_usages[] = {
     {"exit", "exit, Closes the shell.\n"},
     { "history", "history, Outputs command history throughout the shell's runtime up to a max of 128 commands (latest commands).\n"},
     { "pwd", "pwd, Outputs the current working directory.\n" },
+    {"unalias", "unalias [alias name], deletes the specified alias.\n"},
     { "xpt", "xpt [variable name]=[value], Sets a new environment variable with the specified value.\n"}
 };
 

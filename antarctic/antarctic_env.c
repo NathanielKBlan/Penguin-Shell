@@ -62,6 +62,30 @@ char * alias_lookup(pen_alias_table * alias_table, char * alias) {
     return NULL;
 }
 
+void clear_alias(pen_alias_table * alias_table, char * alias) {
+    for (int i = 0; i < alias_table->table_limit; i++) {
+        if (alias_table->aliases[i].alias_name != NULL && strcmp(alias_table->aliases[i].alias_name, alias) == 0) {
+            free(alias_table->aliases[i].alias_name);
+            alias_table->aliases[i].alias_name = NULL;
+            free(alias_table->aliases[i].alias_value);
+            alias_table->aliases[i].alias_value = NULL;
+            alias_table->aliases[i].free = 1;
+        }
+    }
+}
+
+void clear_alias_table(pen_alias_table * alias_table) {
+    for (int i = 0; i < alias_table->table_limit; i++) {
+        if (alias_table->aliases[i].free == 0) {
+            free(alias_table->aliases[i].alias_name);
+            alias_table->aliases[i].alias_name = NULL;
+            free(alias_table->aliases[i].alias_value);
+            alias_table->aliases[i].alias_value = NULL;
+        }
+    }
+    free(alias_table);
+}
+
 void pen_export(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count){
 
     //the scheme will be something like VAR_NAME=String
@@ -137,6 +161,16 @@ void pen_chirp(char ** args, history * hist, pen_alias_table * alias_table, size
     }
 }
 
+void pen_unalias(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count) {
+    (void) hist;
+    if (arg_count < 2) {
+        return;
+    }
+
+    char * alias = *(args + 1);
+    clear_alias(alias_table, alias);
+}
+
 //history management library
 history * init_history() {
     history * hist = malloc(sizeof(history));
@@ -178,7 +212,7 @@ void fill_entry(history_entry ** entry, char * full_cmmd, char * command, char *
     memcpy((*entry)->full_cmmd, full_cmmd, command_len);
     memcpy((*entry)->command, command, strlen(command));
     for (int i = 0; i < arg_count; i++) {
-        memcpy(*((*entry)->args + i), *(args + i), sizeof(char) * MAX_ARG_LEN);
+        memcpy(*((*entry)->args + i), *(args + i), strlen(*(args + i)));
     }
 }
 

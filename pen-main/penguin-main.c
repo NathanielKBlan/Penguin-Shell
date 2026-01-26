@@ -56,7 +56,7 @@ int waddle(char * base_command, char ** args) {
 
 void pen_exit(char ** args, history * hist, pen_alias_table * alias_table, size_t arg_count) {
     (void)args;
-    clean_up(hist);
+    clean_up(hist, alias_table);
     free_tokens(args, arg_count);
     printf("\033[38;2;0;255;255m" "Goodbye (•ᴗ•)ゝ\n" "\033[0m");
     exit(0);
@@ -96,7 +96,7 @@ void greet() {
     printf("===========================\n");
 }
 
-int clean_up(history * hist) {
+int clean_up(history * hist, pen_alias_table * alias_table) {
     for (int i = 0; i < hist->cells_filled; i++) {
         history_entry * entry = *(hist->entries + i);
         clear_entry(entry);
@@ -104,6 +104,7 @@ int clean_up(history * hist) {
     }
     free(hist->entries);
     free(hist);
+    clear_alias_table(alias_table);
 }
 
 void free_tokens(char ** tokens, size_t arg_count) {
